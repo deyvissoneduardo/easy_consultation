@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Medico;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MedicoController extends Controller
 {
@@ -18,7 +19,13 @@ class MedicoController extends Controller
      */
     public function index()
     {
-        //
+        $doctors = Medico::all();
+
+        if($doctors === []){
+            return response()->json(['message' => 'No Content'], 204);
+        }
+
+        return response()->json(['doctors' => $doctors], 200);
     }
 
     /**

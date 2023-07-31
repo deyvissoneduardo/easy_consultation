@@ -29,6 +29,7 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::get('user', [AuthController::class, 'index']);
 
     Route::post('medicos', [MedicoController::class, 'create']);
+    Route::get('medicos', [MedicoController::class, 'index']);
 });
 
 Route::controller(CidadesController::class)->group(function () {
