@@ -10,6 +10,8 @@ class Medico extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
+    protected $table = 'medico';
     protected $fillable = ['nome', 'especilidade'];
     protected $dates = ['deleted_at'];
 

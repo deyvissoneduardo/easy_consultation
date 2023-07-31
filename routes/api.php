@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Http\Controllers;
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CidadesController;
 use Illuminate\Http\Request;
@@ -24,8 +26,9 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
-
     Route::get('user', [AuthController::class, 'index']);
+
+    Route::post('medicos', [MedicoController::class, 'create']);
 });
 
 Route::controller(CidadesController::class)->group(function () {
