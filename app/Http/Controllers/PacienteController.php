@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Paciente;
 use Illuminate\Http\Request;
-
+use Illuminate\Http\Response;
 class PacienteController extends Controller
 {
 
@@ -33,10 +33,13 @@ class PacienteController extends Controller
             $patient->celular = $request->celular;
             $patient->save();
 
-            return response()->json(['result' => ['message' => 'Patient created successful.', 'patient' => $patient]], 200);
+            return response()->json(['result' =>
+                ['message' => 'Patient created successful.', 'patient' => $patient]],
+                Response::HTTP_OK);
 
         }else{
-            return response()->json(['result' => ['message' => 'Patient Already Registered']], 409);
+            return response()->json(['result' => ['message' => 'Patient Already Registered']],
+             Response::HTTP_CONFLICT);
         }
     }
 
@@ -69,7 +72,20 @@ class PacienteController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        if (!$id) {
+            return response()->json(['result' => ['message' => 'Bad Request']], Response::HTTP_BAD_REQUEST);
+        }
+
+        $patient = Paciente::find($id);
+        if($patient != null){
+            $patient->nome = $request->nome;
+            $patient->celular = $request->celular;
+            $patient->save();
+
+            return response()->json(['result' =>
+            ['message' => 'Patient updated successful.', 'patient' => $patient]],
+            Response::HTTP_OK);
+        }
     }
 
     /**
