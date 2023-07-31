@@ -16,7 +16,7 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'getAll']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'index']]);
     }
 
     public function login(Request $request)
@@ -50,7 +50,8 @@ class AuthController extends Controller
         }
     }
 
-    public function getAll() {
+    public function index()
+    {
         $users = User::all();
         return response()->json(['users' => $users], 200);
     }

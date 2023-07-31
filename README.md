@@ -64,3 +64,11 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+index: Responsável por listar todos os recursos.
+show: Exibe um recurso específico.
+create: Exibe o formulário para criar um novo recurso.
+store: Armazena o novo recurso no banco de dados.
+edit: Exibe o formulário para editar um recurso existente.
+update: Atualiza um recurso existente no banco de dados.
+destroy: Remove um recurso do banco de dados.

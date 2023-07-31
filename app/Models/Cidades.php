@@ -10,6 +10,7 @@ class Cidades extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    protected $table = 'cidades';
     protected $fillable = ['nome', 'estado'];
 
     protected $dates = ['deleted_at'];

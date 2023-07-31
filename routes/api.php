@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CidadesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,5 +25,10 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
 
-    Route::get('user', [AuthController::class, 'getAll']);
+    Route::get('user', [AuthController::class, 'index']);
+});
+
+Route::controller(CidadesController::class)->group(function () {
+    Route::post('/cidades', 'create');
+    Route::get('/cidades', 'index');
 });
