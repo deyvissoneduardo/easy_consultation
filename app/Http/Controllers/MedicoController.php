@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Medico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Http\Response;
 class MedicoController extends Controller
 {
 
@@ -22,10 +22,10 @@ class MedicoController extends Controller
         $doctors = Medico::all();
 
         if($doctors === []){
-            return response()->json(['result' => ['message' => 'No Content']], 204);
+            return response()->json(['result' => ['message' => 'No Content']], Response::HTTP_NO_CONTENT);
         }
 
-        return response()->json(['result' => ['doctors' => $doctors]], 200);
+        return response()->json(['result' => ['doctors' => $doctors]], Response::HTTP_OK);
     }
 
     /**
@@ -41,10 +41,10 @@ class MedicoController extends Controller
             $doctor->cidades_id = $request->cidades_id;
             $doctor->save();
 
-            return response()->json(['result' => ['message' => 'Doctor created successful.', 'doctor' => $doctor]], 200);
+            return response()->json(['result' => ['message' => 'Doctor created successful.', 'doctor' => $doctor]], Response::HTTP_OK);
 
         }else{
-            return response()->json(['result' => ['message' => 'Doctor Already Registered']], 409);
+            return response()->json(['result' => ['message' => 'Doctor Already Registered']], Response::HTTP_CONFLICT);
         }
     }
 
@@ -63,9 +63,9 @@ class MedicoController extends Controller
     {
         $doctors = Medico::where('cidades_id', $id_cidade)->get();
         if($doctors === []) {
-            return response()->json(['result' => ['doctors' => 'No Content']], 204);
+            return response()->json(['result' => ['doctors' => 'No Content']], Response::HTTP_NO_CONTENT);
         }
-        return response()->json(['result' => ['doctors' => $doctors]], 200);
+        return response()->json(['result' => ['doctors' => $doctors]], Response::HTTP_OK);
     }
 
     /**
