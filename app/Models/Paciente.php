@@ -6,16 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Cidades extends Model
+class Paciente extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    protected $fillable = ['nome', 'estado'];
+
+    protected $fillable = ['nome', 'cpf', 'celular'];
 
     protected $dates = ['deleted_at'];
 
     public function medico()
     {
-        return $this->hasMany(Medico::class);
+        return $this->belongsToMany(Medico::class);
     }
 }
