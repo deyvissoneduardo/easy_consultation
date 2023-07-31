@@ -11,6 +11,7 @@ class Paciente extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $table = 'paciente';
     protected $fillable = ['nome', 'cpf', 'celular'];
 
     protected $dates = ['deleted_at'];
