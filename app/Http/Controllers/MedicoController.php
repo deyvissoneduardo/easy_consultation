@@ -59,9 +59,13 @@ class MedicoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id_cidade)
     {
-        //
+        $doctors = Medico::where('cidades_id', $id_cidade)->get();
+        if($doctors === []) {
+            return response()->json(['result' => ['doctors' => 'No Content']], 204);
+        }
+        return response()->json(['result' => ['doctors' => $doctors]], 200);
     }
 
     /**
