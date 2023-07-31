@@ -22,12 +22,12 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $user = User::where('email', $request->email)->first();
-        if(!$user) return response()->json(['message' => 'User Not Found'], 404);
+        if(!$user) return response()->json(['result' => ['message' => 'User Not Found']], 404);
 
         $credentials = $request->only('email', 'password');
 
         if (!$token = Auth::guard('api')->attempt($credentials)) {
-               return response()->json(['error' => 'Unauthorized'], 401);
+               return response()->json(['result' => ['error' => 'Unauthorized']], 401);
         }
         return $this->respondWithToken($token, $request);
 
@@ -43,17 +43,20 @@ class AuthController extends Controller
             $user->password = bcrypt($request->password);
             $user->save();
 
-            return response()->json(['message' => 'User created successful.', 'user' => $user], 201);
+            return response()->json(['result' => ['message' => 'User created successful.', 'user' => $user]], 201);
 
         }else{
-            return response()->json(['message' => 'E-mail Already Registered'], 409);
+            return response()->json(['result' => ['message' => 'E-mail Already Registered']], 409);
         }
     }
 
     public function index()
     {
         $users = User::all();
-        return response()->json(['users' => $users], 200);
+        if($users === []){
+            return response()->json(['result' => ['message' => 'No Content']], 204);
+        }
+        return response()->json(['result' => ['users' => $users]], 200);
     }
 
 
@@ -66,7 +69,7 @@ class AuthController extends Controller
     {
         auth('api')->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json(['result' => ['message' => 'Successfully logged out']]);
     }
 
 
@@ -74,10 +77,10 @@ class AuthController extends Controller
     {
         $user = User::where('email', $request->email)->first();
         $tomorrow = time() + 3600;
-        return response()->json([
+        return response()->json(['result' => [
             'access_token' =>  'bearer '.$token,
             'expires_in' => $tomorrow
-        ]);
+        ]]);
     }
 
 }

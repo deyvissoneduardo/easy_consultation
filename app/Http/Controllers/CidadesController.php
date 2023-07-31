@@ -11,7 +11,10 @@ class CidadesController extends Controller
     public function index()
     {
         $cities = DB::select('SELECT nome, estado FROM cidades ORDER BY nome');
-        return response()->json(['cities' => $cities], 200);
+        if($cities === []){
+            return response()->json(['result' => ['message' => 'No Content']], 204);
+        }
+        return response()->json(['result' => ['cities' => $cities]], 200);
     }
 
     public function show($id)
@@ -28,10 +31,10 @@ class CidadesController extends Controller
             $city->estado = $request->estado;
             $city->save();
 
-            return response()->json(['message' => 'City created successful.', 'city' => $city], 201);
+            return response()->json(['result' => ['message' => 'City created successful.', 'city' => $city]], 201);
 
         }else{
-            return response()->json(['message' => 'City Already Registered'], 409);
+            return response()->json(['result' => ['message' => 'City Already Registered']], 409);
         }
     }
 

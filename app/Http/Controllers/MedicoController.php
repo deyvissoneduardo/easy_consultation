@@ -22,10 +22,10 @@ class MedicoController extends Controller
         $doctors = Medico::all();
 
         if($doctors === []){
-            return response()->json(['message' => 'No Content'], 204);
+            return response()->json(['result' => ['message' => 'No Content']], 204);
         }
 
-        return response()->json(['doctors' => $doctors], 200);
+        return response()->json(['result' => ['doctors' => $doctors]], 200);
     }
 
     /**
@@ -41,10 +41,10 @@ class MedicoController extends Controller
             $doctor->cidades_id = $request->cidades_id;
             $doctor->save();
 
-            return response()->json(['message' => 'Doctor created successful.', 'user' => $doctor], 201);
+            return response()->json(['result' => ['message' => 'Doctor created successful.', 'doctor' => $doctor]], 200);
 
         }else{
-            return response()->json(['message' => 'Doctor Already Registered'], 409);
+            return response()->json(['result' => ['message' => 'Doctor Already Registered']], 409);
         }
     }
 
