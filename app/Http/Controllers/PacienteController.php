@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Paciente;
 use Illuminate\Http\Request;
 
 class PacienteController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
     /**
      * Display a listing of the resource.
      */
@@ -17,9 +23,21 @@ class PacienteController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $patient = Paciente::where('nome', $request->nome)->first();
+        if(!$patient){
+            $patient = new Paciente();
+            $patient->nome = $request->nome;
+            $patient->cpf = $request->cpf;
+            $patient->celular = $request->celular;
+            $patient->save();
+
+            return response()->json(['result' => ['message' => 'Patient created successful.', 'patient' => $patient]], 200);
+
+        }else{
+            return response()->json(['result' => ['message' => 'Patient Already Registered']], 409);
+        }
     }
 
     /**
