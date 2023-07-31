@@ -33,9 +33,9 @@ class AuthController extends Controller
 
     }
 
-    public function register(Request $request){
-
-        $user = User::where('email', $request->cpf)->first();
+    public function register(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
         if(!$user){
             $user = new User();
             $user->name = $request->name;
