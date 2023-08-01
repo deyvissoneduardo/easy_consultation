@@ -31,6 +31,7 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::post('medicos', [MedicoController::class, 'create']);
     Route::get('medicos', [MedicoController::class, 'index']);
     Route::get('/cidades/{id_cidade}/medicos', [MedicoController::class, 'show']);
+    Route::post('/medicos/{id_medico}/pacientes', [MedicoController::class, 'bindPatient']);
 
     Route::post('pacientes', [PacienteController::class, 'create']);
     Route::put('/pacientes/{id_paciente}', [PacienteController::class, 'update']);

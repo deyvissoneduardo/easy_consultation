@@ -67,7 +67,6 @@ class PacienteController extends Controller
             }
 
             $patient = Paciente::find($id);
-
             if (!$patient) {
                 return RequestResponse::error([], 'Patient Not Found', Response::HTTP_NOT_FOUND);
             }

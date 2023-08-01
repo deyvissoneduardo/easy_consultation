@@ -20,7 +20,7 @@ class Medico extends Model
         return $this->belongsTo(Cidades::class);
     }
 
-    public function paciente()
+    public function patient()
     {
         return $this->belongsToMany(Paciente::class);
     }

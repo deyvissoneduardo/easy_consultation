@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Medico;
+use App\Models\Paciente;
 use App\Utils\RequestResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -73,6 +74,32 @@ class MedicoController extends Controller
             return RequestResponse::success($doctors, '');
         } catch (\Exception $e) {
             return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function bindPatient(Request $request, $id_medico)
+    {
+        try {
+            $doctor = Medico::find($id_medico);
+            if (!$doctor) {
+                return RequestResponse::error('Doctor Not Found', [], Response::HTTP_NOT_FOUND);
+            }
+            if(!$request->paciente_id){
+                return RequestResponse::error('Patient required in body', [], Response::HTTP_BAD_REQUEST);
+            }
+
+            $patientId = $request->paciente_id;
+            $patient = Paciente::find($patientId);
+            if (!$patient) {
+                return RequestResponse::error('Patient Not Found', [], Response::HTTP_NOT_FOUND);
+            }
+
+            $doctor->patient()->attach($patientId);
+
+            return RequestResponse::success(['doctor' => $doctor, 'patient' => $patient,]);
+
+        } catch (\Exception $e) {
+            return response()->json(['result' => ['message' => 'Internal Server Error']], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
