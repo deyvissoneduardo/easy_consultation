@@ -3,92 +3,71 @@
 namespace App\Http\Controllers;
 
 use App\Models\Medico;
+use App\Utils\RequestResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+
 class MedicoController extends Controller
 {
-
     public function __construct()
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth:api', ['except' => ['index']]);
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $doctors = Medico::all();
+        $doctors = DB::table('medico')
+        ->selectRaw('medico.nome as medico, medico.especialidade, cidades.nome as cidade')
+        ->join('cidades', 'medico.cidades_id', '=', 'cidades.id')
+        ->get();
 
-        if($doctors === []){
-            return response()->json(['result' => ['message' => 'No Content']], Response::HTTP_NO_CONTENT);
+        if ($doctors === []) {
+            return RequestResponse::success([], 'No Content', Response::HTTP_NO_CONTENT);
         }
 
         return response()->json(['result' => ['doctors' => $doctors]], Response::HTTP_OK);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(Request $request)
     {
-        $doctor = Medico::where('nome', $request->nome)->first();
-        if(!$doctor){
-            $doctor = new Medico();
-            $doctor->nome = $request->nome;
-            $doctor->especialidade = $request->especialidade;
-            $doctor->cidades_id = $request->cidades_id;
-            $doctor->save();
+        try {
+            $this->validate($request, [
+                'nome' => 'required|string',
+                'especialidade' => 'required|string',
+                'cidades_id' => 'required|integer|exists:cidades,id',
+            ]);
 
-            return response()->json(['result' => ['message' => 'Doctor created successful.', 'doctor' => $doctor]], Response::HTTP_OK);
+            $doctor = Medico::where('nome', $request->nome)->first();
+            if (!$doctor) {
+                $doctor = new Medico();
+                $doctor->nome = $request->nome;
+                $doctor->especialidade = $request->especialidade;
+                $doctor->cidades_id = $request->cidades_id;
+                $doctor->save();
 
-        }else{
-            return response()->json(['result' => ['message' => 'Doctor Already Registered']], Response::HTTP_CONFLICT);
+                return RequestResponse::success($doctor, '');
+            } else {
+                return RequestResponse::error('Doctor Already Registered');
+            }
+        } catch (ValidationException $e) {
+            return RequestResponse::error('Validation Error', $e->errors());
+        } catch (\Exception $e) {
+            return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id_cidade)
     {
-        $doctors = Medico::where('cidades_id', $id_cidade)->get();
-        if($doctors === []) {
-            return response()->json(['result' => ['doctors' => 'No Content']], Response::HTTP_NO_CONTENT);
+        try {
+            $doctors = Medico::where('cidades_id', $id_cidade)->get();
+            if ($doctors->isEmpty()) {
+                return RequestResponse::success([], 'No Content', Response::HTTP_NO_CONTENT);
+            }
+            return RequestResponse::success($doctors, '');
+        } catch (\Exception $e) {
+            return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return response()->json(['result' => ['doctors' => $doctors]], Response::HTTP_OK);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

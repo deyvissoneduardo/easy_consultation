@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Utils\RequestResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -49,7 +50,7 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-       try {
+        try {
             $this->validate($request, [
                 'name' => 'required|string',
                 'email' => 'required|email|unique:users,email',
@@ -69,9 +70,11 @@ class AuthController extends Controller
             } else {
                 return RequestResponse::error('E-mail Already Registered', [], Response::HTTP_CONFLICT);
             }
-       } catch (\Throwable $th) {
-            return RequestResponse::error('Internal Server Error', $th, Response::HTTP_INTERNAL_SERVER_ERROR);
-       }
+        } catch (ValidationException $e) {
+            return RequestResponse::error('Validation Error', $e->errors());
+        } catch (\Exception $e) {
+            return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function index()
@@ -82,9 +85,10 @@ class AuthController extends Controller
             if ($users === []) {
                 return RequestResponse::error('No Content', [], Response::HTTP_NO_CONTENT);
             }
+
             return RequestResponse::success($users, '');
-        } catch (\Throwable $th) {
-            return RequestResponse::error('Internal Server Error', $th, Response::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (\Exception $e) {
+            return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
