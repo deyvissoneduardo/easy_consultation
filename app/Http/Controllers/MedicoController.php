@@ -99,7 +99,7 @@ class MedicoController extends Controller
             return RequestResponse::success(['doctor' => $doctor, 'patient' => $patient,]);
 
         } catch (\Exception $e) {
-            return response()->json(['result' => ['message' => 'Internal Server Error']], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
