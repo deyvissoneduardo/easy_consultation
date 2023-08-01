@@ -3,96 +3,99 @@
 namespace App\Http\Controllers;
 
 use App\Models\Paciente;
+use App\Utils\RequestResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
+
 class PacienteController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('auth:api');
     }
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        //
+        $patients = Paciente::all();
+
+        if ($patients->isEmpty()) {
+            return RequestResponse::success([], 'No Content', Response::HTTP_NO_CONTENT);
+        }
+        return RequestResponse::success($patients, '');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(Request $request)
     {
-        $patient = Paciente::where('nome', $request->nome)->first();
-        if(!$patient){
-            $patient = new Paciente();
-            $patient->nome = $request->nome;
-            $patient->cpf = $request->cpf;
-            $patient->celular = $request->celular;
-            $patient->save();
+        try {
+            $this->validate($request, [
+                'nome' => 'required|string',
+                'cpf' => 'required|string|unique:paciente,cpf',
+                'celular' => 'required|string',
+            ]);
 
-            return response()->json(['result' =>
-                ['message' => 'Patient created successful.', 'patient' => $patient]],
-                Response::HTTP_OK);
+            $patient = Paciente::create([
+                'nome' => $request->nome,
+                'cpf' => $request->cpf,
+                'celular' => $request->celular,
+            ]);
 
-        }else{
-            return response()->json(['result' => ['message' => 'Patient Already Registered']],
-             Response::HTTP_CONFLICT);
+            return RequestResponse::success($patient, 'Patient created successfully');
+        } catch (ValidationException $e) {
+            return RequestResponse::error('Validation Error', $e->errors());
+        } catch (\Exception $e) {
+            return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        //
-    }
+        $patient = Paciente::find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        if (!$id) {
-            return response()->json(['result' => ['message' => 'Bad Request']], Response::HTTP_BAD_REQUEST);
+        if (!$patient) {
+            return RequestResponse::error([], 'Patient Not Found', Response::HTTP_NOT_FOUND);
         }
 
-        $patient = Paciente::find($id);
-        if($patient != null){
+        return RequestResponse::success($patient, '');
+    }
+
+    public function update(Request $request, string $id)
+    {
+        try {
+            if (!$id) {
+                return RequestResponse::error([], 'Bad Request');
+            }
+
+            $patient = Paciente::find($id);
+
+            if (!$patient) {
+                return RequestResponse::error([], 'Patient Not Found', Response::HTTP_NOT_FOUND);
+            }
+
             $patient->nome = $request->nome;
             $patient->celular = $request->celular;
             $patient->save();
 
-            return response()->json(['result' =>
-            ['message' => 'Patient updated successful.', 'patient' => $patient]],
-            Response::HTTP_OK);
+            return RequestResponse::success($patient, '');
+        } catch (\Exception $e) {
+            return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        //
+        try {
+            $patient = Paciente::find($id);
+
+            if (!$patient) {
+                return RequestResponse::error([], 'Patient Not Found', Response::HTTP_NOT_FOUND);
+            }
+
+            $patient->delete();
+
+            return RequestResponse::success([], 'Patient deleted successfully');
+        } catch (\Exception $e) {
+            return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
