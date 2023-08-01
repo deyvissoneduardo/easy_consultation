@@ -19,9 +19,9 @@ class MedicoController extends Controller
     public function index()
     {
         $doctors = DB::table('medico')
-        ->selectRaw('medico.nome as medico, medico.especialidade, cidades.nome as cidade')
-        ->join('cidades', 'medico.cidades_id', '=', 'cidades.id')
-        ->get();
+            ->selectRaw('medico.nome as medico, medico.especialidade, cidades.nome as cidade')
+            ->join('cidades', 'medico.cidades_id', '=', 'cidades.id')
+            ->get();
 
         if ($doctors === []) {
             return RequestResponse::success([], 'No Content', Response::HTTP_NO_CONTENT);
@@ -61,7 +61,12 @@ class MedicoController extends Controller
     public function show(string $id_cidade)
     {
         try {
-            $doctors = Medico::where('cidades_id', $id_cidade)->get();
+            $doctors = DB::table('medico')
+                ->selectRaw('medico.nome as medico, medico.especialidade, cidades.nome as cidade')
+                ->join('cidades', 'medico.cidades_id', '=', 'cidades.id')
+                ->where('cidades.id', $id_cidade)
+                ->get();
+
             if ($doctors->isEmpty()) {
                 return RequestResponse::success([], 'No Content', Response::HTTP_NO_CONTENT);
             }
