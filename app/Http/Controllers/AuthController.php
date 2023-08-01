@@ -6,13 +6,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use DateTime;
+use App\Utils\RequestResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
-    public function username() {
+    public function username()
+    {
         return 'email';
+    }
+    private function findUserByEmail($email)
+    {
+        return User::where('email', $email)->first();
     }
 
     public function __construct()
@@ -22,44 +28,65 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $user = User::where('email', $request->email)->first();
-        if(!$user) return response()->json(['result' => ['message' => 'User Not Found']], Response::HTTP_NOT_FOUND);
+        try {
+            $user = $this->findUserByEmail($request->email);
 
-        $credentials = $request->only('email', 'password');
+            if (!$user) {
+                return RequestResponse::error('User Not Found', [], Response::HTTP_NOT_FOUND);
+            }
 
-        if (!$token = Auth::guard('api')->attempt($credentials)) {
-               return response()->json(['result' => ['error' => 'Unauthorized']], Response::HTTP_UNAUTHORIZED);
+            $credentials = $request->only('email', 'password');
+
+            if (!$token = Auth::guard('api')->attempt($credentials)) {
+                return RequestResponse::error('Unauthorized', [], Response::HTTP_UNAUTHORIZED);
+            }
+
+            return $this->respondWithToken($token);
+        } catch (\Throwable $th) {
+            return RequestResponse::error('Internal Server Error', $th, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return $this->respondWithToken($token, $request);
-
     }
 
     public function register(Request $request)
     {
-        $user = User::where('email', $request->email)->first();
-        if(!$user){
-            $user = new User();
-            $user->name = $request->name;
-            $user->email = $request->email;
-            $user->password = bcrypt($request->password);
-            $user->save();
+       try {
+            $this->validate($request, [
+                'name' => 'required|string',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required|string|min:6',
+            ]);
 
-            return response()->json(['result' => ['message' => 'User created successful.', 'user' => $user]], Response::HTTP_OK);
+            $user = $this->findUserByEmail($request->email);
 
-        }else{
-            return response()->json(['result' => ['message' => 'E-mail Already Registered']], Response::HTTP_CONFLICT);
-        }
+            if (!$user) {
+                $user = new User();
+                $user->name = $request->name;
+                $user->email = $request->email;
+                $user->password = bcrypt($request->password);
+                $user->save();
+
+                return RequestResponse::success($user, 'User created successfully');
+            } else {
+                return RequestResponse::error('E-mail Already Registered', [], Response::HTTP_CONFLICT);
+            }
+       } catch (\Throwable $th) {
+            return RequestResponse::error('Internal Server Error', $th, Response::HTTP_INTERNAL_SERVER_ERROR);
+       }
     }
 
     public function index()
     {
-        $users = User::all();
-        if($users === []){
-            return response()->json(['result' => ['message' => 'No Content']], Response::HTTP_NO_CONTENT);
-        }
-        return response()->json(['result' => ['users' => $users]], Response::HTTP_OK);
-    }
+        try {
+            $users = DB::select('SELECT id, name, email FROM users');
 
+            if ($users === []) {
+                return RequestResponse::error('No Content', [], Response::HTTP_NO_CONTENT);
+            }
+            return RequestResponse::success($users, '');
+        } catch (\Throwable $th) {
+            return RequestResponse::error('Internal Server Error', $th, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public function me()
     {
@@ -73,15 +100,12 @@ class AuthController extends Controller
         return response()->json(['result' => ['message' => 'Successfully logged out']]);
     }
 
-
-    protected function respondWithToken($token, Request $request)
+    protected function respondWithToken($token)
     {
-        $user = User::where('email', $request->email)->first();
         $tomorrow = time() + 3600;
         return response()->json(['result' => [
-            'access_token' =>  'bearer '.$token,
+            'access_token' =>  'bearer ' . $token,
             'expires_in' => $tomorrow
         ]]);
     }
-
 }
