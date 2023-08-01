@@ -50,13 +50,17 @@ class PacienteController extends Controller
 
     public function show(string $id)
     {
-        $patient = Paciente::find($id);
+        try {
+            $patient = Paciente::find($id);
 
-        if (!$patient) {
-            return RequestResponse::error([], 'Patient Not Found', Response::HTTP_NOT_FOUND);
+            if (!$patient) {
+                return RequestResponse::error([], 'Patient Not Found', Response::HTTP_NOT_FOUND);
+            }
+
+            return RequestResponse::success($patient, '');
+        } catch (\Exception $e) {
+            return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        return RequestResponse::success($patient, '');
     }
 
     public function update(Request $request, string $id)

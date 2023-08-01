@@ -15,7 +15,7 @@ class Cidades extends Model
 
     protected $dates = ['deleted_at'];
 
-    public function medico()
+    public function doctor()
     {
         return $this->hasMany(Medico::class);
     }

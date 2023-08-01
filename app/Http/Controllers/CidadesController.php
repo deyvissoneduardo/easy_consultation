@@ -14,16 +14,19 @@ class CidadesController extends Controller
 {
     public function index()
     {
-        $cities = DB::select('SELECT id, nome, estado FROM cidades ORDER BY id');
-        if ($cities === []) {
-            return RequestResponse::success([], 'No Content', Response::HTTP_NO_CONTENT);
+        try {
+            $cities = DB::select('SELECT id, nome, estado FROM cidades ORDER BY id');
+
+            if ($cities === []) {
+                return RequestResponse::success([], 'No Content', Response::HTTP_NO_CONTENT);
+            }
+
+            return RequestResponse::success($cities, '');
+        } catch (\Exception $e) {
+            return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return RequestResponse::success($cities, '');
     }
 
-    public function show($id)
-    {
-    }
 
     public function create(Request $request)
     {

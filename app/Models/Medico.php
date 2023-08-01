@@ -15,7 +15,7 @@ class Medico extends Model
     protected $fillable = ['nome', 'especilidade'];
     protected $dates = ['deleted_at'];
 
-    public function cidades()
+    public function cities()
     {
         return $this->belongsTo(Cidades::class);
     }

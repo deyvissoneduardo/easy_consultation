@@ -43,8 +43,8 @@ class AuthController extends Controller
             }
 
             return $this->respondWithToken($token);
-        } catch (\Throwable $th) {
-            return RequestResponse::error('Internal Server Error', $th, Response::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (\Exception $e) {
+            return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -101,7 +101,7 @@ class AuthController extends Controller
     {
         auth('api')->logout();
 
-        return response()->json(['result' => ['message' => 'Successfully logged out']]);
+        return RequestResponse::success([], 'Successfully logged out');
     }
 
     protected function respondWithToken($token)

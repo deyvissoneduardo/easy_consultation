@@ -19,16 +19,20 @@ class MedicoController extends Controller
 
     public function index()
     {
-        $doctors = DB::table('medico')
+        try {
+            $doctors = DB::table('medico')
             ->selectRaw('medico.nome as medico, medico.especialidade, cidades.nome as cidade')
             ->join('cidades', 'medico.cidades_id', '=', 'cidades.id')
             ->get();
 
-        if ($doctors === []) {
+            if ($doctors === []) {
             return RequestResponse::success([], 'No Content', Response::HTTP_NO_CONTENT);
-        }
+            }
 
-        return response()->json(['result' => ['doctors' => $doctors]], Response::HTTP_OK);
+            return RequestResponse::success($doctors, '');
+        } catch (\Exception $e) {
+            return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function create(Request $request)
