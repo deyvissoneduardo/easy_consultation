@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Medico;
 use App\Models\Paciente;
+use App\Rules\CPFValidator;
 use App\Utils\RequestResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -31,7 +32,7 @@ class PacienteController extends Controller
         try {
             $this->validate($request, [
                 'nome' => 'required|string',
-                'cpf' => 'required|string|unique:paciente,cpf',
+                'cpf' => ['required', 'string', new CPFValidator()],
                 'celular' => 'required|string',
             ]);
 
