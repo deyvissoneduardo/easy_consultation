@@ -15,6 +15,12 @@ class Medico extends Model
     protected $table = ConstantTable::TABLE_DOCTOR;
     protected $fillable = ['nome', 'especilidade'];
     protected $dates = ['deleted_at'];
+    protected $hidden = [
+        'deleted_at',
+        'created_at',
+        'deleted_at',
+        'updated_at,'
+    ];
 
     public function cities()
     {

@@ -22,15 +22,15 @@ class MedicoController extends Controller
     {
         try {
             $doctors = DB::table(ConstantTable::TABLE_DOCTOR)
-            ->selectRaw('medico.nome as medico, medico.especialidade, cidades.nome as cidade')
-            ->join(ConstantTable::TABLE_CITY, 'medico.cidades_id', '=', 'cidades.id')
-            ->get();
+                ->selectRaw('medico.id as id , medico.nome as medico, medico.especialidade, cidades.nome as cidade')
+                ->join(ConstantTable::TABLE_CITY, 'medico.cidades_id', '=', 'cidades.id')
+                ->get();
 
             if ($doctors === []) {
-            return RequestResponse::success([], 'No Content', Response::HTTP_NO_CONTENT);
+                return RequestResponse::success(['No Content'], Response::HTTP_NO_CONTENT);
             }
 
-            return RequestResponse::success($doctors, '');
+            return RequestResponse::success($doctors);
         } catch (\Exception $e) {
             return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -53,7 +53,7 @@ class MedicoController extends Controller
                 $doctor->cidades_id = $request->cidades_id;
                 $doctor->save();
 
-                return RequestResponse::success($doctor, '');
+                return RequestResponse::success($doctor);
             } else {
                 return RequestResponse::error('Doctor Already Registered');
             }
@@ -74,9 +74,9 @@ class MedicoController extends Controller
                 ->get();
 
             if ($doctors->isEmpty()) {
-                return RequestResponse::success([], 'No Content', Response::HTTP_NO_CONTENT);
+                return RequestResponse::success(['No Content'], Response::HTTP_NO_CONTENT);
             }
-            return RequestResponse::success($doctors, '');
+            return RequestResponse::success($doctors);
         } catch (\Exception $e) {
             return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -89,7 +89,7 @@ class MedicoController extends Controller
             if (!$doctor) {
                 return RequestResponse::error('Doctor Not Found', [], Response::HTTP_NOT_FOUND);
             }
-            if(!$request->paciente_id){
+            if (!$request->paciente_id) {
                 return RequestResponse::error('Patient required in body', [], Response::HTTP_BAD_REQUEST);
             }
 
@@ -101,8 +101,7 @@ class MedicoController extends Controller
 
             $doctor->patient()->attach($patientId);
 
-            return RequestResponse::success(['doctor' => $doctor, 'patient' => $patient,]);
-
+            return RequestResponse::success(['doctor' => $doctor, 'patient' => $patient]);
         } catch (\Exception $e) {
             return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }

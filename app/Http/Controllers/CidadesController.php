@@ -18,10 +18,10 @@ class CidadesController extends Controller
             $cities = DB::select('SELECT id, nome, estado FROM '. ConstantTable::TABLE_CITY .' ORDER BY id');
 
             if ($cities === []) {
-                return RequestResponse::success([], 'No Content', Response::HTTP_NO_CONTENT);
+                return RequestResponse::success(['No Content'], Response::HTTP_NO_CONTENT);
             }
 
-            return RequestResponse::success($cities, '');
+            return RequestResponse::success($cities);
         } catch (\Exception $e) {
             return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -43,7 +43,7 @@ class CidadesController extends Controller
                     'nome' => $request->nome,
                     'estado' => $request->estado,
                 ]);
-                return RequestResponse::success($city, '');
+                return RequestResponse::success($city);
             } else {
                 return RequestResponse::error('City Already Registered');
             }

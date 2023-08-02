@@ -20,9 +20,9 @@ class PacienteController extends Controller
         $patients = Paciente::all();
 
         if ($patients->isEmpty()) {
-            return RequestResponse::success([], 'No Content', Response::HTTP_NO_CONTENT);
+            return RequestResponse::success(['No Content'], Response::HTTP_NO_CONTENT);
         }
-        return RequestResponse::success($patients, '');
+        return RequestResponse::success($patients);
     }
 
     public function create(Request $request)
@@ -40,7 +40,7 @@ class PacienteController extends Controller
                 'celular' => $request->celular,
             ]);
 
-            return RequestResponse::success($patient, 'Patient created successfully');
+            return RequestResponse::success($patient);
         } catch (ValidationException $e) {
             return RequestResponse::error('Validation Error', $e->errors());
         } catch (\Exception $e) {
@@ -57,7 +57,7 @@ class PacienteController extends Controller
                 return RequestResponse::error([], 'Patient Not Found', Response::HTTP_NOT_FOUND);
             }
 
-            return RequestResponse::success($patient, '');
+            return RequestResponse::success($patient);
         } catch (\Exception $e) {
             return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -79,7 +79,7 @@ class PacienteController extends Controller
             $patient->celular = $request->celular;
             $patient->save();
 
-            return RequestResponse::success($patient, '');
+            return RequestResponse::success($patient);
         } catch (\Exception $e) {
             return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }

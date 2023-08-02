@@ -67,7 +67,7 @@ class AuthController extends Controller
                 $user->password = bcrypt($request->password);
                 $user->save();
 
-                return RequestResponse::success($user, 'User created successfully');
+                return RequestResponse::success($user);
             } else {
                 return RequestResponse::error('E-mail Already Registered', [], Response::HTTP_CONFLICT);
             }
@@ -81,13 +81,13 @@ class AuthController extends Controller
     public function index()
     {
         try {
-            $users = DB::select('SELECT id, name, email FROM ' . ConstantTable::TABLE_USERS );
+            $users = DB::select('SELECT id, name, email FROM ' . ConstantTable::TABLE_USERS);
 
             if ($users === []) {
                 return RequestResponse::error('No Content', [], Response::HTTP_NO_CONTENT);
             }
 
-            return RequestResponse::success($users, '');
+            return RequestResponse::success($users);
         } catch (\Exception $e) {
             return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -102,7 +102,7 @@ class AuthController extends Controller
     {
         auth('api')->logout();
 
-        return RequestResponse::success([], 'Successfully logged out');
+        return RequestResponse::success(['Successfully logged out']);
     }
 
     protected function respondWithToken($token)

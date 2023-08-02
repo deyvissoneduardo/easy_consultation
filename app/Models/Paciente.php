@@ -17,6 +17,18 @@ class Paciente extends Model
 
     protected $dates = ['deleted_at'];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'deleted_at',
+        'created_at',
+        'deleted_at',
+        'updated_at,'
+    ];
+
     public function doctor()
     {
         return $this->belongsToMany(Medico::class);
