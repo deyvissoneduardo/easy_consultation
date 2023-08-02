@@ -27,7 +27,7 @@ class MedicoController extends Controller
                 ->get();
 
             if ($doctors === []) {
-                return RequestResponse::success(['No Content'], Response::HTTP_NO_CONTENT);
+                return RequestResponse::success('No Content');
             }
 
             return RequestResponse::success($doctors);
@@ -74,7 +74,7 @@ class MedicoController extends Controller
                 ->get();
 
             if ($doctors->isEmpty()) {
-                return RequestResponse::success(['No Content'], Response::HTTP_NO_CONTENT);
+                return RequestResponse::success('No Content');
             }
             return RequestResponse::success($doctors);
         } catch (\Exception $e) {

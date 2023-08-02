@@ -18,7 +18,7 @@ class CidadesController extends Controller
             $cities = DB::select('SELECT id, nome, estado FROM '. ConstantTable::TABLE_CITY .' ORDER BY id');
 
             if ($cities === []) {
-                return RequestResponse::success(['No Content'], Response::HTTP_NO_CONTENT);
+                return RequestResponse::success('No Content');
             }
 
             return RequestResponse::success($cities);

@@ -23,7 +23,7 @@ class PacienteController extends Controller
         $patients = Paciente::all();
 
         if ($patients->isEmpty()) {
-            return RequestResponse::success(['No Content'], Response::HTTP_NO_CONTENT);
+            return RequestResponse::success('No Content');
         }
         return RequestResponse::success($patients);
     }
