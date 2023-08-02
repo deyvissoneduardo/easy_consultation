@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
@@ -9,8 +10,6 @@ use App\Models\User;
 use App\Utils\ConstantTable;
 use App\Utils\RequestResponse;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -18,6 +17,7 @@ class AuthController extends Controller
     {
         return 'email';
     }
+
     private function findUserByEmail($email)
     {
         return User::where('email', $email)->first();
@@ -52,27 +52,18 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         try {
-            $this->validate($request, [
-                'name' => 'required|string',
-                'email' => 'required|email|unique:users,email',
-                'password' => 'required|string|min:6',
-            ]);
 
-            $user = $this->findUserByEmail($request->email);
+            $user = User::firstOrCreate(
+                ['email' => $request->email],
+                [
+                    'name' => $request->name,
+                    'password' => bcrypt($request->password),
+                ]
+            );
 
-            if (!$user) {
-                $user = new User();
-                $user->name = $request->name;
-                $user->email = $request->email;
-                $user->password = bcrypt($request->password);
-                $user->save();
-
-                return RequestResponse::success($user);
-            } else {
-                return RequestResponse::error('E-mail Already Registered', [], Response::HTTP_CONFLICT);
-            }
+            return RequestResponse::success($user);
         } catch (ValidationException $e) {
-            return RequestResponse::error('Validation Error', $e->errors());
+            return RequestResponse::error('Validation Error', $e);
         } catch (\Exception $e) {
             return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -81,9 +72,9 @@ class AuthController extends Controller
     public function index()
     {
         try {
-            $users = DB::select('SELECT id, name, email FROM ' . ConstantTable::TABLE_USERS);
+            $users = User::select('id', 'name', 'email')->get();
 
-            if ($users === []) {
+            if ($users->isEmpty()) {
                 return RequestResponse::error('No Content', [], Response::HTTP_NO_CONTENT);
             }
 
@@ -107,10 +98,12 @@ class AuthController extends Controller
 
     protected function respondWithToken($token)
     {
-        $tomorrow = time() + 3600;
-        return response()->json(['result' => [
-            'access_token' =>  'bearer ' . $token,
-            'expires_in' => $tomorrow
-        ]]);
+        $expiresIn = Auth::factory()->getTTL() * 60;
+        return response()->json([
+            'result' => [
+                'access_token' =>  'bearer ' . $token,
+                'expires_in' => $expiresIn,
+            ],
+        ]);
     }
 }
