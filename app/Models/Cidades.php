@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Utils\ConstantTable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,7 +11,7 @@ class Cidades extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    protected $table = 'cidades';
+    protected $table = ConstantTable::TABLE_CITY;
     protected $fillable = ['nome', 'estado'];
 
     protected $dates = ['deleted_at'];

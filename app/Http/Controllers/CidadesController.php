@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cidades;
-
+use App\Utils\ConstantTable;
 use App\Utils\RequestResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -15,7 +15,7 @@ class CidadesController extends Controller
     public function index()
     {
         try {
-            $cities = DB::select('SELECT id, nome, estado FROM cidades ORDER BY id');
+            $cities = DB::select('SELECT id, nome, estado FROM '. ConstantTable::TABLE_CITY .' ORDER BY id');
 
             if ($cities === []) {
                 return RequestResponse::success([], 'No Content', Response::HTTP_NO_CONTENT);

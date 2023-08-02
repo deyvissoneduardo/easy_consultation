@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Utils\ConstantTable;
 use App\Utils\RequestResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -80,7 +81,7 @@ class AuthController extends Controller
     public function index()
     {
         try {
-            $users = DB::select('SELECT id, name, email FROM users');
+            $users = DB::select('SELECT id, name, email FROM ' . ConstantTable::TABLE_USERS );
 
             if ($users === []) {
                 return RequestResponse::error('No Content', [], Response::HTTP_NO_CONTENT);

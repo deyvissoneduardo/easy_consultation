@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Medico;
 use App\Models\Paciente;
+use App\Utils\ConstantTable;
 use App\Utils\RequestResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -20,9 +21,9 @@ class MedicoController extends Controller
     public function index()
     {
         try {
-            $doctors = DB::table('medico')
+            $doctors = DB::table(ConstantTable::TABLE_DOCTOR)
             ->selectRaw('medico.nome as medico, medico.especialidade, cidades.nome as cidade')
-            ->join('cidades', 'medico.cidades_id', '=', 'cidades.id')
+            ->join(ConstantTable::TABLE_CITY, 'medico.cidades_id', '=', 'cidades.id')
             ->get();
 
             if ($doctors === []) {
@@ -66,9 +67,9 @@ class MedicoController extends Controller
     public function show(string $id_cidade)
     {
         try {
-            $doctors = DB::table('medico')
+            $doctors = DB::table(ConstantTable::TABLE_DOCTOR)
                 ->selectRaw('medico.nome as medico, medico.especialidade, cidades.nome as cidade')
-                ->join('cidades', 'medico.cidades_id', '=', 'cidades.id')
+                ->join(ConstantTable::TABLE_CITY, 'medico.cidades_id', '=', 'cidades.id')
                 ->where('cidades.id', $id_cidade)
                 ->get();
 
