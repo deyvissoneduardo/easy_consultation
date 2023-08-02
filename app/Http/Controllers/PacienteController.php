@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Medico;
 use App\Models\Paciente;
 use App\Utils\RequestResponse;
 use Illuminate\Http\Request;
@@ -99,6 +100,22 @@ class PacienteController extends Controller
             return RequestResponse::success([], 'Patient deleted successfully');
         } catch (\Exception $e) {
             return RequestResponse::error('Internal Server Error', $e, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getPatinentByDoctor($id_medico)
+    {
+        try {
+            $doctor = Medico::findOrFail($id_medico);
+            $patients = $doctor->patient;
+
+            if($patients === null){
+                return RequestResponse::success('No Content');
+            }
+
+            return RequestResponse::success($patients);
+        } catch (\Exception $e) {
+            return RequestResponse::error('Erro ao obter pacientes vinculados ao médico', $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
