@@ -30,6 +30,7 @@ class PacienteController extends Controller
     public function create(PatientRegisterRequest $request)
     {
         try {
+            $request['cpf'] = preg_replace('/[^a-zA-Z0-9]/', '', $request['cpf']);
             $patient = Paciente::create([
                 'nome' => $request->nome,
                 'cpf' => $request->cpf,
