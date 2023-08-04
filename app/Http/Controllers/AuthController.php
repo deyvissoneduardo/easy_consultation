@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AuthRegisterRequest;
 use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -49,7 +50,7 @@ class AuthController extends Controller
         }
     }
 
-    public function register(Request $request)
+    public function register(AuthRegisterRequest $request)
     {
         try {
 

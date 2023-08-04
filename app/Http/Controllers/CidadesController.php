@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CityRequest;
 use App\Models\Cidades;
 use App\Utils\ConstantTable;
 use App\Utils\RequestResponse;
@@ -28,14 +29,9 @@ class CidadesController extends Controller
     }
 
 
-    public function create(Request $request)
+    public function create(CityRequest $request)
     {
         try {
-            $this->validate($request, [
-                'nome' => 'required|string',
-                'estado' => 'required|string',
-            ]);
-
             $city = Cidades::where('nome', $request->nome)->first();
 
             if (!$city) {

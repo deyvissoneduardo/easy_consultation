@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DoctorRequest;
 use App\Models\Medico;
 use App\Models\Paciente;
 use App\Utils\ConstantTable;
@@ -36,15 +37,9 @@ class MedicoController extends Controller
         }
     }
 
-    public function create(Request $request)
+    public function create(DoctorRequest $request)
     {
         try {
-            $this->validate($request, [
-                'nome' => 'required|string',
-                'especialidade' => 'required|string',
-                'cidades_id' => 'required|integer|exists:cidades,id',
-            ]);
-
             $doctor = Medico::where('nome', $request->nome)->first();
             if (!$doctor) {
                 $doctor = new Medico();

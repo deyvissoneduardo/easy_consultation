@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PatientRegisterRequest;
+use App\Http\Requests\PatientUpdateRequest;
 use App\Models\Medico;
 use App\Models\Paciente;
-use App\Rules\CPFValidator;
-use App\Rules\PhoneNumberValidator;
 use App\Utils\RequestResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
@@ -28,15 +27,9 @@ class PacienteController extends Controller
         return RequestResponse::success($patients);
     }
 
-    public function create(Request $request)
+    public function create(PatientRegisterRequest $request)
     {
         try {
-            $this->validate($request, [
-                'nome' => 'required|string',
-                'cpf' => ['required', 'string', new CPFValidator()],
-                'celular' => ['required', 'string', new PhoneNumberValidator()],
-            ]);
-
             $patient = Paciente::create([
                 'nome' => $request->nome,
                 'cpf' => $request->cpf,
@@ -66,7 +59,7 @@ class PacienteController extends Controller
         }
     }
 
-    public function update(Request $request, string $id)
+    public function update(PatientUpdateRequest $request, string $id)
     {
         try {
             if (!$id) {
