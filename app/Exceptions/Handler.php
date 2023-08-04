@@ -3,12 +3,10 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Illuminate\Http\Response;
-use Illuminate\Http\JsonResponse;
 
 class Handler extends ExceptionHandler
 {
+    use ApiHandler;
     /**
      * The list of the inputs that are never flashed to the session on validation exceptions.
      *
@@ -32,8 +30,8 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
-        if ($exception instanceof TokenExpiredException) {
-            return new JsonResponse(['error' => 'Token Expirado'], Response::HTTP_FORBIDDEN);
+        if ($request->is('api/*')) {
+            return $this->getJsonException($exception);
         }
 
         return parent::render($request, $exception);
